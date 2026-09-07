@@ -12,66 +12,69 @@ data "aws_iam_instance_profile" "my_ssm_profile" {
   name = "EC2-SSM-Role"
 }
 
-# ==============================================================================
-# 1. Web Server (Public Subnet)
-# ==============================================================================
+# 1. Web Server (Public)
+module "web_server" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 6.0"
 
-resource "aws_instance" "web_server" {
+  name                   = "web server"
   ami                    = data.aws_ami.my_ami.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.my_public_subnet.id
+  subnet_id              = module.my_vpc.public_subnets[0]
   private_ip             = "10.0.0.5"
-  vpc_security_group_ids = [aws_security_group.public_sg.id]
+  create_security_group  = false
+  vpc_security_group_ids = [module.public_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-  user_data = file("userdata.sh")
 
-
-  tags = {
-    Name = "web server"
-  }
+  user_data              = templatefile("userdata.sh", {})
+  tags                   = { Name = "web server" }
 }
 
 # Elastic IP attached to Web Server
 resource "aws_eip" "web_eip" {
   domain   = "vpc"
-  instance = aws_instance.web_server.id
+  instance = module.web_server.id
 
   tags = {
     Name = "devops-web-eip"
   }
 }
 
-resource "aws_instance" "controller" {
+# 2. Controller (Private)
+module "controller" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 6.0"
+
+  name                   = "controller"
   ami                    = data.aws_ami.my_ami.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.my_private_subnet.id
+  subnet_id              = module.my_vpc.private_subnets[0]
   private_ip             = "10.0.0.135"
-  vpc_security_group_ids = [aws_security_group.private_sg.id]
+  create_security_group  = false
+  vpc_security_group_ids = [module.private_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-  user_data = file("userdata.sh")
 
-
-  tags = {
-    Name = "controller"
-  }
+  user_data              = templatefile("userdata.sh", {})
+  tags                   = { Name = "controller" }
 }
 
+# 3. Monitoring (Private)
+module "monitoring" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~> 6.0"
 
-
-resource "aws_instance" "monitoring" {
+  name                   = "monitoring"
   ami                    = data.aws_ami.my_ami.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.my_private_subnet.id
+  subnet_id              = module.my_vpc.private_subnets[0]
   private_ip             = "10.0.0.136"
-  vpc_security_group_ids = [aws_security_group.private_sg.id]
+  create_security_group  = false
+  vpc_security_group_ids = [module.private_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-  user_data = file("userdata.sh")
 
-
-  tags = {
-    Name = "monitoring"
-  }
+  user_data              = templatefile("userdata.sh", {})
+  tags                   = { Name = "monitoring" }
 }
