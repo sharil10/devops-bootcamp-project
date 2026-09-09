@@ -67,7 +67,7 @@ module "node3" {
   name                   = "monitoring"
   ami                    = data.aws_ami.my_ami.id
   instance_type          = "t3.micro"
-  subnet_id              = module.my_vpc.public_subnets[0]
+  subnet_id              = module.my_vpc.private_subnets[0]
   #private_ip             = "10.0.0.136"
   create_security_group  = false
   vpc_security_group_ids = [module.private_sg.id]
