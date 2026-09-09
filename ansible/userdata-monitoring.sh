@@ -11,12 +11,12 @@ sudo chown prometheus:prometheus /etc/prometheus /var/lib/prometheus
 
 PROMETHEUS_VERSION="2.51.0"
 cd /tmp
-wget https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
-tar xzf prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
-sudo cp prometheus-${PROMETHEUS_VERSION}.linux-amd64/prometheus /usr/local/bin/
-sudo cp prometheus-${PROMETHEUS_VERSION}.linux-amd64/promtool /usr/local/bin/
-sudo cp -r prometheus-${PROMETHEUS_VERSION}.linux-amd64/consoles /etc/prometheus
-sudo cp -r prometheus-${PROMETHEUS_VERSION}.linux-amd64/console_libraries /etc/prometheus
+wget https://github.com/prometheus/prometheus/releases/download/v$${PROMETHEUS_VERSION}/prometheus-$${PROMETHEUS_VERSION}.linux-amd64.tar.gz
+tar xzf prometheus-$${PROMETHEUS_VERSION}.linux-amd64.tar.gz
+sudo cp prometheus-$${PROMETHEUS_VERSION}.linux-amd64/prometheus /usr/local/bin/
+sudo cp prometheus-$${PROMETHEUS_VERSION}.linux-amd64/promtool /usr/local/bin/
+sudo cp -r prometheus-$${PROMETHEUS_VERSION}.linux-amd64/consoles /etc/prometheus
+sudo cp -r prometheus-$${PROMETHEUS_VERSION}.linux-amd64/console_libraries /etc/prometheus
 sudo chown -R prometheus:prometheus /etc/prometheus
 
 # Create Prometheus config
@@ -61,9 +61,9 @@ EOF
 # Install Node Exporter for self-monitoring
 NODE_EXPORTER_VERSION="1.7.0"
 cd /tmp
-wget https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
-tar xzf node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
-sudo cp node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
+wget https://github.com/prometheus/node_exporter/releases/download/v$${NODE_EXPORTER_VERSION}/node_exporter-$${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+tar xzf node_exporter-$${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+sudo cp node_exporter-$${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
 
 sudo useradd --no-create-home --shell /bin/false node_exporter
 
