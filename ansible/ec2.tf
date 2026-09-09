@@ -74,6 +74,6 @@ module "node3" {
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
 
-  #user_data              = templatefile("userdata.sh", {})
+  user_data              = templatefile("userdata-monitoring.sh", {})
   tags                   = { Name = "monitoring" }
 }
