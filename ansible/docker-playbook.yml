@@ -1,50 +1,18 @@
 ---
-- name: Install Docker on Web server
-  hosts: node1
+- name: Install Docker on Web and Monitoring servers
+  hosts: all
   become: yes
-  vars:
-    site_title: Armada Infratify
-    site_owner: Pasukan Platform
-    web_port: 80
   tasks:
     - name: Update apt cache
       apt:
         update_cache: yes
         cache_valid_time: 3600
 
-    - name: Install Docker dependencies
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-        state: present
-
-    - name: Create keyrings directory
-      file:
-        path: /etc/apt/keyrings
-        state: directory
-        mode: '0755'
-
-    - name: Add Docker GPG key
-      get_url:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        dest: /etc/apt/keyrings/docker.asc
-        mode: '0644'
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable"
-        state: present
-
     - name: Install Docker
       apt:
         name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-          - docker-compose-plugin
+          - docker.io
+          - docker-compose
         state: present
 
     - name: Start Docker service
@@ -53,10 +21,8 @@
         state: started
         enabled: yes
 
-    - name: Add ssm-user to docker group
+    - name: Add ubuntu user to docker group
       user:
-        name: ssm-user
+        name: ubuntu
         groups: docker
         append: yes
-
- 
