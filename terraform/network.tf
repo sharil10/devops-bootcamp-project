@@ -9,6 +9,7 @@ module "my_vpc" {
   # Subnets
   public_subnets  = ["10.0.0.0/25"]
   private_subnets = ["10.0.0.128/25"]
+  
 
   # Internet Gateway & Public Routing
   create_igw              = true
@@ -18,8 +19,8 @@ module "my_vpc" {
   }
 
   # NAT Gateway & Private Routing
-  enable_nat_gateway       = true
-  single_nat_gateway       = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
   private_route_table_tags = {
     Name = "devops-private-route"
   }

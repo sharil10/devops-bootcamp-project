@@ -13,7 +13,7 @@ data "aws_iam_instance_profile" "my_ssm_profile" {
 }
 
 # 1. Web Server (Public)
-module "web_server" {
+module "node1" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 6.0"
 
@@ -21,20 +21,19 @@ module "web_server" {
   ami                    = data.aws_ami.my_ami.id
   instance_type          = "t3.micro"
   subnet_id              = module.my_vpc.public_subnets[0]
-  private_ip             = "10.0.0.5"
+  
   create_security_group  = false
   vpc_security_group_ids = [module.public_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-
-  user_data              = templatefile("userdata.sh", {})
+  private_ip             = "10.0.0.5"
+  
   tags                   = { Name = "web server" }
 }
-
 # Elastic IP attached to Web Server
 resource "aws_eip" "web_eip" {
   domain   = "vpc"
-  instance = module.web_server.id
+  instance = module.node1.id
 
   tags = {
     Name = "devops-web-eip"
@@ -42,7 +41,7 @@ resource "aws_eip" "web_eip" {
 }
 
 # 2. Controller (Private)
-module "controller" {
+module "node2" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 6.0"
 
@@ -55,13 +54,13 @@ module "controller" {
   vpc_security_group_ids = [module.private_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-
-  user_data              = templatefile("userdata.sh", {})
+  
+  
   tags                   = { Name = "controller" }
 }
 
 # 3. Monitoring (Private)
-module "monitoring" {
+module "node3" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 6.0"
 
@@ -74,7 +73,6 @@ module "monitoring" {
   vpc_security_group_ids = [module.private_sg.id]
   iam_instance_profile   = data.aws_iam_instance_profile.my_ssm_profile.name
   key_name               = "sharil-keypair"
-
-  user_data              = templatefile("userdata.sh", {})
+  
   tags                   = { Name = "monitoring" }
 }

@@ -1,29 +1,18 @@
-output "web_server_public_ip" {
-  description = "Public Elastic IP of the Web Server"
-  value       = aws_eip.web_eip.public_ip
+output "web_server" { value = module.node1.private_ip }
+output "controller" { value = module.node2.private_ip }
+output "monitoring" { value = module.node3.private_ip }
+
+output "ssm_web_server" {
+  description = "SSM command to connect to web server"
+  value       = "aws ssm start-session --target ${module.node1.id}"
 }
 
-output "web_server_ssm_command" {
-  description = "AWS CLI SSM command to connect to the Web Server"
-  value       = "aws ssm start-session --target ${module.web_server.id}"
+output "ssm_controller" {
+  description = "SSM command to connect to controller"
+  value       = "aws ssm start-session --target ${module.node2.id}"
 }
 
-output "controller_private_ip" {
-  description = "Private IP of the Ansible Controller"
-  value       = module.controller.private_ip
-}
-
-output "controller_ssm_command" {
-  description = "AWS CLI SSM command to connect to the Ansible Controller"
-  value       = "aws ssm start-session --target ${module.controller.id}"
-}
-
-output "monitoring_private_ip" {
-  description = "Private IP of the Monitoring Server"
-  value       = module.monitoring.private_ip
-}
-
-output "monitoring_ssm_command" {
-  description = "AWS CLI SSM command to connect to the Monitoring Server"
-  value       = "aws ssm start-session --target ${module.monitoring.id}"
+output "ssm_monitoring" {
+  description = "SSM command to connect to monitoring server"
+  value       = "aws ssm start-session --target ${module.node3.id}"
 }
