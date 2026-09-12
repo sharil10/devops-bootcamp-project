@@ -1,0 +1,56 @@
+---
+- name: Deploy Prometheus + Grafana on Monitoring Server
+  hosts: monitoring
+  become: true
+  tasks:
+    - name: Create monitoring directory
+      file:
+        path: /opt/monitoring
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Copy prometheus.yml
+      copy:
+        src: /home/ssm-user/monitoring/prometheus.yml
+        dest: /opt/monitoring/prometheus.yml
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: /home/ssm-user/monitoring/docker-compose.yml
+        dest: /opt/monitoring/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Run docker-compose up -d
+      shell: |
+        cd /opt/monitoring
+        docker-compose up -d
+      become_user: ubuntu
+
+    - name: Wait for Prometheus to be ready
+      wait_for:
+        port: 9090
+        delay: 5
+        timeout: 60
+
+    - name: Wait for Grafana to be ready
+      wait_for:
+        port: 3000
+        delay: 5
+        timeout: 60
+
+    - name: Check running containers
+      shell: docker ps --format "{{ '{{' }}.Names{{ '}}' }} {{ '{{' }}.Status{{ '}}' }}"
+      become_user: ubuntu
+      register: docker_status
+      changed_when: false
+
+    - name: Show container status
+      debug:
+        msg: "{{ docker_status.stdout_lines }}"

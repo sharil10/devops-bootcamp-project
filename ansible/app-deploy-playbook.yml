@@ -1,0 +1,40 @@
+---
+- name: Deploy app container on Web Server
+  hosts: web
+  become: yes
+  vars:
+    ecr_url: "132656278182.dkr.ecr.ap-southeast-1.amazonaws.com/devops-bootcamp/final-project-sharil:latest"
+    aws_region: "ap-southeast-1"
+  tasks:
+    - name: Login to ECR
+      shell: |
+        aws ecr get-login-password --region {{ aws_region }} | \
+        docker login --username AWS --password-stdin 132656278182.dkr.ecr.{{ aws_region }}.amazonaws.com
+      changed_when: false
+
+    - name: Pull latest image from ECR
+      shell: docker pull {{ ecr_url }}
+      register: pull_result
+      changed_when: "'Downloaded newer image' in pull_result.stdout or 'Pulling' in pull_result.stderr"
+
+    - name: Stop existing web-app container
+      shell: docker stop web-app || true
+      changed_when: false
+
+    - name: Remove existing web-app container
+      shell: docker rm web-app || true
+      changed_when: false
+
+    - name: Run new web-app container
+      shell: |
+        docker run -d --name web-app -p 80:80 --restart unless-stopped {{ ecr_url }}
+      register: run_result
+
+    - name: Show container status
+      shell: docker ps
+      register: docker_ps
+      changed_when: false
+
+    - name: Display running containers
+      debug:
+        msg: "{{ docker_ps.stdout_lines }}"
