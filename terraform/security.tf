@@ -20,12 +20,12 @@ module "public_sg" {
       from_port   = 9100
       to_port     = 9100
     }
-    ssh = {
-      cidr_ipv4   = "${chomp(data.http.myip.response_body)}/32"
-      ip_protocol = "tcp"
-      from_port   = 22
-      to_port     = 22
-    }
+    #ssh = {
+      #cidr_ipv4   = "${chomp(data.http.myip.response_body)}/32"
+      #ip_protocol = "tcp"
+      #from_port   = 22
+      #to_port     = 22
+    #}
     ssh_from_controller = {
       cidr_ipv4   = "10.0.0.0/16"
       ip_protocol = "tcp"
@@ -56,12 +56,12 @@ module "private_sg" {
   vpc_id          = module.my_vpc.vpc_id
 
   ingress_rules = {
-    ssh = {
-      cidr_ipv4   = "${chomp(data.http.myip.response_body)}/32"
-      ip_protocol = "tcp"
-      from_port   = 22
-      to_port     = 22
-    }
+    #ssh = {
+      #cidr_ipv4   = "${chomp(data.http.myip.response_body)}/32"
+      #ip_protocol = "tcp"
+      #from_port   = 22
+      #to_port     = 22
+    #}
     ssh_from_bastion = {
       cidr_ipv4   = "10.0.0.0/16"
       ip_protocol = "tcp"
@@ -82,6 +82,6 @@ module "private_sg" {
   }
 }
 
-data "http" "myip" {
-  url = "https://ifconfig.me/ip"
-}
+#data "http" "myip" {
+  #url = "https://ifconfig.me/ip"
+#
